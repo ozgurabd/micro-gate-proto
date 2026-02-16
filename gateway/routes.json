@@ -1,0 +1,22 @@
+{
+  "services": [
+    {
+      "name": "payment-service",
+      "prefix": "/api/payments",
+      "targets": [
+        "http://payment-service-1:8080",
+        "http://payment-service-2:8080"
+      ],
+      "auth_required": true,
+      "cache_enabled": false
+    },
+    {
+      "name": "catalog-service",
+      "prefix": "/api/products",
+      "targets": ["http://product-service:8080"],
+      "auth_required": false,
+      "cache_enabled": true,
+      "cache_ttl": 60000
+    }
+  ]
+}

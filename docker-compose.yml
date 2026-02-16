@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  gateway:
+    build: ./gateway
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./gateway/routes.json:/app/routes.json
+    networks:
+      - micro-net
+
+  payment-service-1:
+    build: ./services/payment
+    environment:
+      - SERVICE_NAME=payment-v1
+    networks:
+      - micro-net
+
+  payment-service-2:
+    build: ./services/payment
+    environment:
+      - SERVICE_NAME=payment-v2
+    networks:
+      - micro-net
+
+  product-service:
+    build: ./services/product
+    environment:
+      - SERVICE_NAME=product-catalog
+    networks:
+      - micro-net
+
+networks:
+  micro-net:
+    driver: bridge

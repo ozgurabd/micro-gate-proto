@@ -1,0 +1,45 @@
+name: MicroGate CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test-gateway:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Lint Gateway
+        run: deno lint gateway/main.ts
+
+      - name: Run Gateway Unit Tests
+        run: |
+          cd gateway
+          deno test --allow-net --allow-read main_test.ts
+
+  build-docker:
+    needs: test-gateway
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Gateway Image
+        run: |
+          docker build ./gateway -t micro-gateway:test
+
+      - name: Build Go Service Image
+        run: |
+          docker build ./services/payment -t payment-service:test
